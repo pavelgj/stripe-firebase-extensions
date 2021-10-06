@@ -42,6 +42,7 @@ import {
   getCurrentUserSubscription,
   getCurrentUserSubscriptions,
   getPrice,
+  getPriceFromSubscription,
   getPrices,
   getProduct,
   getProducts,
@@ -489,6 +490,17 @@ describe("Emulator tests", () => {
         ];
         expect(subs).to.eql(expected);
       });
+    });
+  });
+
+  describe("getPriceFromSubscription()", () => {
+    it("returns the price associated with the given subscription", async () => {
+      const price: Price = await getPriceFromSubscription(
+        payments,
+        subscription1
+      );
+
+      expect(price).to.include(premiumPlanPrice);
     });
   });
 

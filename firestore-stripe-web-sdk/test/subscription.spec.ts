@@ -15,24 +15,32 @@
  */
 
 import { expect, use } from "chai";
-import { fake as sinonFake, SinonSpy } from "sinon";
+import {
+  fake as sinonFake,
+  SinonSpy,
+  replace as sinonReplace,
+  restore as sinonRestore,
+} from "sinon";
 import { FirebaseApp } from "@firebase/app";
 import {
   getCurrentUserSubscription,
   getCurrentUserSubscriptions,
+  getPriceFromSubscription,
   getStripePayments,
   onCurrentUserSubscriptionUpdate,
+  Price,
   Subscription,
   StripePayments,
   StripePaymentsError,
 } from "../src/index";
-import { subscription1, subscription2 } from "./testdata";
+import { premiumPlanPrice, subscription1, subscription2 } from "./testdata";
 import {
   setSubscriptionDAO,
   SubscriptionDAO,
   SubscriptionSnapshot,
 } from "../src/subscription";
 import { setUserDAO, UserDAO } from "../src/user";
+import * as product from "../src/product";
 
 use(require("chai-as-promised"));
 use(require("sinon-chai"));
@@ -285,6 +293,29 @@ describe("onCurrentUserSubscriptionUpdate()", () => {
     );
 
     expect(userFake).to.have.been.calledOnce;
+  });
+});
+
+describe("getPriceFromSubscription()", () => {
+  afterEach(() => {
+    sinonRestore();
+  });
+
+  it("returns the price associated with the given subscription", async () => {
+    const fake: SinonSpy = sinonFake.resolves(premiumPlanPrice);
+    sinonReplace(product, "getPrice", fake);
+
+    const price: Price = await getPriceFromSubscription(
+      payments,
+      subscription1
+    );
+
+    expect(price).to.equal(premiumPlanPrice);
+    expect(fake).to.have.been.calledOnceWithExactly(
+      payments,
+      subscription1.productId,
+      subscription1.priceId
+    );
   });
 });
 

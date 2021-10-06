@@ -53,3 +53,5 @@ export {
   SubscriptionSnapshot,
   SubscriptionStatus,
 } from "./subscription";
+
+export { getPriceFromSubscription } from "./subscription-utils";

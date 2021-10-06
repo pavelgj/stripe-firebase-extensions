@@ -34,6 +34,9 @@ export function getCurrentUserSubscriptions(payments: StripePayments, options?: 
 export function getPrice(payments: StripePayments, productId: string, priceId: string): Promise<Price>;
 
 // @public
+export function getPriceFromSubscription(payments: StripePayments, subscription: Subscription): Promise<Price>;
+
+// @public
 export function getPrices(payments: StripePayments, productId: string): Promise<Price[]>;
 
 // @public
