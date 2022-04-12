@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onCustomerDataDeleted = exports.onUserDeleted = exports.handleWebhookEvents = void 0;
 const admin = __importStar(require("firebase-admin"));
+const eventarc_1 = require("firebase-admin/eventarc");
 const functions = __importStar(require("firebase-functions"));
 const stripe_1 = __importDefault(require("stripe"));
 const logs = __importStar(require("./logs"));
@@ -65,6 +66,9 @@ const stripe = new stripe_1.default(config_1.default.stripeSecretKey, {
     },
 });
 admin.initializeApp();
+const eventChannel = process.env.EVENTARC_CHANNEL && eventarc_1.getEventarc().channel(process.env.EVENTARC_CHANNEL, {
+    allowedEventTypes: process.env.EXT_SELECTED_EVENTS
+});
 /**
  * Create a customer object in Stripe when a user is created.
  */
@@ -641,6 +645,10 @@ exports.handleWebhookEvents = functions.handler.https.onRequest(async (req, resp
                 default:
                     logs.webhookHandlerError(new Error('Unhandled relevant event!'), event.id, event.type);
             }
+            eventChannel === null || eventChannel === void 0 ? void 0 : eventChannel.publish({
+                type: `com.stripe.v1.${event.type}`,
+                data: event.data
+            });
             logs.webhookHandlerSucceeded(event.id, event.type);
         }
         catch (error) {

@@ -11,7 +11,8 @@
   "author": "Stripe (https://stripe.com/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "firebase-admin": "^9.9.0",
+    "firebase-admin": "DO NOT RELEASE until latest firebase admin SDK is officially released",
+    "firebase-admin": "https://storage.googleapis.com/firebase-admin-sdk-eventarc/firebase-admin-10.0.2.tgz",
     "firebase-functions": "^3.14.1",
     "stripe": "8.191.0"
   },
